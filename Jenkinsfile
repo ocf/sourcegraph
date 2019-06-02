@@ -24,7 +24,7 @@
                 steps {
                     script {
                         if (fileExists('kubernetes')) {
-                            kubernetesDeployApp('sourcegraph', 5)
+                            kubernetesDeployApp('sourcegraph', '5')
                         }
                     }
                 }
