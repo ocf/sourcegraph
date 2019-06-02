@@ -17,13 +17,6 @@
         }
 
         stages {
-            stage('check-gh-trust') {
-                steps {
-                    checkGitHubAccess()
-                }
-            }
-
-
             stage('deploy-to-prod') {
                 agent {
                     label 'deploy'
