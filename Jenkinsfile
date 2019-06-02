@@ -24,7 +24,7 @@
                 steps {
                     script {
                         if (fileExists('kubernetes')) {
-                            kubernetesDeployApp(repo_name, version)
+                            kubernetesDeployApp('sourcegraph', version)
                         }
                     }
                 }
