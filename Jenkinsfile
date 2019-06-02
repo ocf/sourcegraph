@@ -23,12 +23,6 @@
                 }
                 steps {
                     script {
-                        // TODO: Make these deploy and roll back together!
-                        // TODO: Also try to parallelize these if possible?
-                        pipelineParams.deployTargets.each {
-                            marathonDeployApp(it, version)
-                        }
-
                         if (fileExists('kubernetes')) {
                             kubernetesDeployApp(repo_name, version)
                         }
