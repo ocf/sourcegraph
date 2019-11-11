@@ -94,11 +94,11 @@ spec:
       volumes:
         - name: sourcegraph-secrets
           hostPath:
-            path: /opt/share/docker/secrets/sourcegraph
+            path: /opt/share/kubernetes/secrets/sourcegraph
             type: Directory
         - name: sourcegraph-data
           hostPath:
-            path: /opt/share/docker/sourcegraph
+            path: /opt/share/kubernetes/sourcegraph
             type: Directory
 ---
 apiVersion: v1
