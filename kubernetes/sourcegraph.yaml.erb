@@ -35,7 +35,7 @@ spec:
           ports:
             - containerPort: 7080
           volumeMounts:
-            - name: sourcegraph-secrets
+            - name: sourcegraph-config
               mountPath: /etc/sourcegraph
             - name: sourcegraph-data
               mountPath: /var/opt/sourcegraph
