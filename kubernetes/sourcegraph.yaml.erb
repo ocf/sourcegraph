@@ -1,41 +1,6 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: codeintel-python-service
-spec:
-  selector:
-    app: sourcegraph
-  ports:
-    - port: 2087
-      targetPort: 2087
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: codeinel-python-deployment
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: sourcegraph
-  template:
-    metadata:
-      labels:
-        app: sourcegraph
-    spec:
-      containers:
-        - name: codeintel-python
-          image: sourcegraph/codeintel-python:18892_2018-07-27_ddc9943
-          resources:
-            limits:
-              memory: 512Mi
-              cpu: 1
-          ports:
-            - containerPort: 2087
----
-apiVersion: v1
-kind: Service
-metadata:
   name: sourcegraph-service
 spec:
   selector:
@@ -62,7 +27,7 @@ spec:
     spec:
       containers:
         - name: sourcegraph
-          image: "sourcegraph/server:3.0.1"
+          image: "sourcegraph/server:3.18.0"
           resources:
             limits:
               memory: 2Gi
@@ -70,13 +35,15 @@ spec:
           ports:
             - containerPort: 7080
           volumeMounts:
-            - name: sourcegraph-secrets
+            - name: sourcegraph-config
               mountPath: /etc/sourcegraph
             - name: sourcegraph-data
               mountPath: /var/opt/sourcegraph
           envFrom:
+            - configMapRef:
+                name: sourcegraph-config-vars
             - secretRef:
-                name: sourcegraph-secret
+                name: sourcegraph-db-password
           livenessProbe:
             httpGet:
               path: /
@@ -92,27 +59,36 @@ spec:
             timeoutSeconds: 3
             periodSeconds: 5
       volumes:
-        - name: sourcegraph-secrets
-          hostPath:
-            path: /opt/share/kubernetes/secrets/sourcegraph
-            type: Directory
+        - name: sourcegraph-config
+          secret:
+            secretName: config
         - name: sourcegraph-data
           hostPath:
             path: /opt/share/kubernetes/sourcegraph
             type: Directory
 ---
 apiVersion: v1
-kind: Secret
+kind: ConfigMap
 metadata:
-  name: sourcegraph-secret
-type: Opaque
-stringData:
+  name: sourcegraph-config-vars
+data:
+  # Load data from config files, don't allow them to be edited through the UI
+  SITE_CONFIG_FILE: "/etc/sourcegraph/site.json"
+  EXTSVC_CONFIG_FILE: "/etc/sourcegraph/code-hosts.json"
+  # Load more DB config for things that are not secrets
   PGPORT: "5432"
   PGHOST: "postgres.ocf.berkeley.edu"
   PGUSER: "ocfsourcegraph"
-  PGPASSWORD: "<%= sourcegraph_pgpassword %>"
   PGDATABASE: "ocfsourcegraph"
   PGSSLMODE: "require"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sourcegraph-db-password
+type: Opaque
+data:
+  PGPASSWORD: "<%= sourcegraph_pgpassword %>"
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
