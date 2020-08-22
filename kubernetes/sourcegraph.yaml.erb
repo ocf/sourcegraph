@@ -28,8 +28,6 @@ spec:
       containers:
         - name: sourcegraph
           image: "sourcegraph/server:3.19.1"
-          command: ["/bin/sh"]
-          args: ["-c", "sleep 3600"]
           resources:
             limits:
               memory: 2Gi
@@ -93,7 +91,7 @@ kind: Secret
 metadata:
   name: sourcegraph-db-password
 type: Opaque
-data:
+stringData:
   PGPASSWORD: "<%= sourcegraph_pgpassword %>"
 ---
 apiVersion: extensions/v1beta1
