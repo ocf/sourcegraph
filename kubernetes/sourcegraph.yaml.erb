@@ -36,7 +36,11 @@ spec:
             - containerPort: 7080
           volumeMounts:
             - name: sourcegraph-config
-              mountPath: /etc/sourcegraph
+              mountPath: /etc/sourcegraph/code-hosts.json
+              subPath: code-hosts.json
+            - name: sourcegraph-config
+              mountPath: /etc/sourcegraph/site.json
+              subPath: site.json
             - name: sourcegraph-data
               mountPath: /var/opt/sourcegraph
           envFrom:
